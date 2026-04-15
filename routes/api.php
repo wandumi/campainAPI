@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\CampaignController;
+use App\Http\Controllers\CampaignDataController;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -12,4 +14,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         return $request->user();
     });
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::post('/campaigns', [CampaignController::class, 'store']);
+    
+    Route::post('/campaigns/{campaign}/data', [CampaignDataController::class, 'store']);
 });

@@ -12,7 +12,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        //
+        return Client::all();
     }
 
     /**
@@ -28,7 +28,12 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|unique:clients|max:255',
+        ]);
+
+        return Client::create($validated);
+
     }
 
     /**

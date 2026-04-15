@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('end_date')->nullable();
             $table->timestamps();
 
-            $table->unique(['campaign_id', 'user_id']); 
+            $table->unique(['id']); 
         });
     }
 

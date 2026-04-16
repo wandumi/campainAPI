@@ -1,59 +1,108 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Developer
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Wandumi Munandi
 
 ## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Personalized Video Campaign Manager
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+A robust, API-driven campaign management system built with Laravel 12, MySQL, and Sanctum. This system allows clients to programmatically create campaigns and ingest high-volume user video data using asynchronous background processing.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Features
 
-## Learning Laravel
+- Client Management: Group campaigns under specific client entities.
+- Campaign Management: API endpoints to create and manage video campaigns.
+- Asynchronous Data Ingestion: Handles large user data sets via Laravel Queues (Redis/Database).
+- Graceful Duplicate Handling: Automatically detects existing user_id entries, merges/updates data, and - logs the event for visibility.
+- Flexible Data Schema: Stores custom user metadata using JSON columns.
+- Analytics CLI: A custom Artisan command to generate detailed campaign performance reports.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Installation & Setup
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+This project uses Laravel Sail (Docker) for a consistent development environment.
 
-## Laravel Sponsors
+Clone the repository:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+`git clone <your-repo-url>`
+`cd folderName`
 
-### Premium Partners
+## Install dependencies:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+`composer install`
 
-## Contributing
+## Environment Setup:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+`cp .env.example .env`
+`./vendor/bin/sail up -d`
 
-## Code of Conduct
+## Initialize Database:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+`./vendor/bin/sail artisan migrate --seed
 
-## Security Vulnerabilities
+The seeder creates a test user: admin@example.com / password.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## API Documentation
 
-## License
+1. Authentication
+   All endpoints (except login/register) require a Bearer Token.
+   `POST /api/login (Returns access_token)`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+2. Create Campaign
+   **Endpoint:**` POST /api/campaigns`
+   **Payload:**
+
+```json
+{
+    "client_id": 1,
+    "name": "Summer Launch 2024",
+    "start_date": "2024-06-01",
+    "end_date": "2024-08-31"
+}
+```
+
+3. Add Campaign Data (Asynchronous)
+   **Endpoint:** `POST /api/campaigns/{id}/data`
+
+**Payload:**`
+
+```json
+{
+    "data": [
+        {
+            "user_id": "ext_user_99",
+            "video_url": "https://cdn.com",
+            "custom_fields": {
+                "tier": "gold",
+                "pref": "dark-mode"
+            }
+        }
+    ]
+}
+```
+
+Response: 202 Accepted
+
+Processing: Data is handled by the ProcessCampaignData background job. To process locally, run:
+
+`./vendor/bin/sail artisan queue:work --once`
+
+# Analytics Report
+
+To view campaign summaries, run the following commands:
+
+`./vendor/bin/sail artisan analytics:generate`
+
+Or you can specify by providing an ID, for example:
+
+`./vendor/bin/sail artisan ./vendor/bin/sail artisan analytics:generate 1`
+
+# Testing
+
+The project uses Pest PHP for TDD. To run the test suite:
+`./vendor/bin/sail artisan test`
+
+## Docker Configuration
+
+- The environment is defined in compose.yml.
+- Custom runtimes and the application Dockerfile are located in the /docker directory (published via Sail).
+- The worker service in Docker handles the background job processing automatically.

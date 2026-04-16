@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Campaign;
+use App\Models\CampaignData;
+use App\Models\Client;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -22,7 +25,13 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        // Optional: Create some random users too
-        User::factory(5)->create();
+        Client::factory(3)
+            ->has(
+                Campaign::factory(2)->has(
+                    CampaignData::factory(5), 'data' 
+                )
+            )
+            ->create();
+    
     }
 }

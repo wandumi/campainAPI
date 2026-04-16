@@ -37,7 +37,7 @@ Clone the repository:
 
 ## Initialize Database:
 
-`./vendor/bin/sail artisan migrate --seed
+`./vendor/bin/sail artisan migrate --seed`
 
 The seeder creates a test user: admin@example.com / password.
 
@@ -62,8 +62,7 @@ The seeder creates a test user: admin@example.com / password.
 
 3. Add Campaign Data (Asynchronous)
    **Endpoint:** `POST /api/campaigns/{id}/data`
-
-**Payload:**`
+   **Payload:**`
 
 ```json
 {
@@ -78,11 +77,12 @@ The seeder creates a test user: admin@example.com / password.
         }
     ]
 }
+Response: 202 Accepted
 ```
 
-Response: 202 Accepted
+## Processing:
 
-Processing: Data is handled by the ProcessCampaignData background job. To process locally, run:
+Data is handled by the ProcessCampaignData background job. To process locally, run:
 
 `./vendor/bin/sail artisan queue:work --once`
 

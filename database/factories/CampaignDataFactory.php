@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Campaign;
 use App\Models\CampaignData;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,7 +19,10 @@ class CampaignDataFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'campaign_id' => Campaign::factory(),
+            'user_id' => 'user_' . $this->faker->unique()->numberBetween(100, 999),
+            'video_url' => $this->faker->url,
+            'custom_fields' => ['tier' => 'gold', 'region' => 'ZA'],
         ];
     }
 }

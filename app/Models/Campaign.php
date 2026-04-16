@@ -13,6 +13,13 @@ class Campaign extends Model
     /** @use HasFactory<\Database\Factories\CampaignFactory> */
     use HasFactory;
 
+    protected $fillable = [
+            "client_id", 
+            "name",
+            "start_date",
+            "end_date"
+    ];
+
     public function client() {
         return $this->belongsTo(Client::class);
     }

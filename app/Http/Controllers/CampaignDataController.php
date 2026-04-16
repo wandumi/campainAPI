@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ProcessCampaignData;
+use App\Models\Campaign;
 use App\Models\CampaignData;
 use Illuminate\Http\Request;
 
@@ -26,9 +28,17 @@ class CampaignDataController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Campaign $campaign)
     {
-        //
+         $request->validate([
+            'data' => 'required|array',
+            'data.*.user_id' => 'required|string',
+            'data.*.video_url' => 'required|url',
+        ]);
+
+        ProcessCampaignData::dispatch($campaign, $request->data);
+
+        return response()->json(['message' => 'Data ingestion accepted.'], 202);
     }
 
     /**

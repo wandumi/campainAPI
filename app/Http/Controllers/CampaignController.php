@@ -28,7 +28,19 @@ class CampaignController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         $validated = $request->validate([
+            'client_id' => 'required|exists:clients,id',
+            'name' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        $campaign = Campaign::create($validated);
+
+        return response()->json([
+            'message' => 'Campaign created successfully.',
+            'data' => $campaign
+        ], 201);
     }
 
     /**
